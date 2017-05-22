@@ -7,8 +7,8 @@
 // @grant				GM_getValue
 // @grant				GM_setValue
 // @grant				GM_deleteValue
-// @downloadURL			https://toswy.com/rf_remedy.user.js
-// @updateURL			https://toswy.com/rf_remedy.user.js	
+// @downloadURL			https://github.com/gwhoppal/redfalcon-remedy/raw/master/rf_remedy.user.js
+// @updateURL			https://github.com/gwhoppal/redfalcon-remedy/raw/master/rf_remedy.user.js
 // ==/UserScript==
 
 document.getElementsByClassName('navbar-logo')[0].style.visibility = 'hidden';
@@ -35,7 +35,7 @@ var pagename = loc.substring(loc.lastIndexOf("/")+1,loc.lastIndexOf(".php")); //
 jQuery(".navbar-logo").hide();
 jQuery("<link/>", {
 	rel: "stylesheet",
-	href: "https://toswy.com/rf_remedy.style.css",
+	href: "https://github.com/gwhoppal/redfalcon-remedy/raw/master/rf_remedy.style.css",
 	type: "text/css"
 }).appendTo("head");
 

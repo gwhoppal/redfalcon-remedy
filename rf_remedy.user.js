@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name				Red Falcon Remedy
-// @version				2.5
+// @version				2.5.1
 // @namespace			http://toswy.com/
 // @description			Modifies Red Falcon for the better of TOS. Designed for Firefox
 // @include				https://*.redcheetah.com/*/admin/*
@@ -35,7 +35,7 @@ var pagename = loc.substring(loc.lastIndexOf("/")+1,loc.lastIndexOf(".php")); //
 jQuery(".navbar-logo").hide();
 jQuery("<link/>", {
 	rel: "stylesheet",
-	href: "https://github.com/gwhoppal/redfalcon-remedy/raw/master/rf_remedy.style.css",
+	href: "https://toswy.com/rf_remedy.style.css",
 	type: "text/css"
 }).appendTo("head");
 

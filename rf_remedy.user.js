@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name				Red Falcon Remedy
-// @version				2.5.1
+// @version				2.5.2
 // @namespace			http://toswy.com/
 // @description			Modifies Red Falcon for the better of TOS. Designed for Firefox
 // @include				https://*.redcheetah.com/*/admin/*
@@ -159,33 +159,20 @@ jQuery(document).ready(function($) {
 		/*$("label[for='pos_payment_gift']").text("Gift Card"); // change "Gift Certificate" to "Gift Card"
 		$("[name='pos_payment_gift_number']").val("1111").parent().hide(); // add gift card default number*/
 		$("label[for='pos_payment_gift']").parent().parent().hide(); // remove breaks RF code so we just hide it instead
-        
-		/* this is when we print directly out of point of sale
-        // change "Order" to "Invoice"
-		if ($(".printEnvelopeInvoice").length) {
-			if ($(".bodymargin > div > div:first > table:eq(1) > tbody > tr:first > td:first > b").length) { // existing customer; we have to find order number differently
-				var orderPntr = $(".bodymargin > div > div:first");
-                var text = orderPntr.html().replace('Order', 'Invoice');
-                orderPntr.html(text);
-			} else { // point of sale customer
-				var orderPntr = $(".bodymargin > div > div:first > table:eq(1) > tbody > tr > td");
-                var text = orderPntr.html().replace('Order', 'Invoice');
-                orderPntr.html(text);
-                orderPntr.parent().find("td:first").remove();
-			}
-		}*/
 		
 		// get the invoice number and autoprint
 		if ($(".printEnvelopeInvoice").length) {
 			if ($(".bodymargin > div > div:first > table:eq(1) > tbody > tr:first > td:first > b").length) { // existing customer; we have to find order number differently
 				$(".bodymargin > div > div:first table").remove();
 				var invnum = $(".bodymargin > div > div:first").text();
+				var amount = $(".bodymargin > div > div:eq(2) table table td.boldText:first").text();
 			} else { // point of sale customer
 				// find the order number on the page
 				var invnum = $(".bodymargin > div > div:first > table:eq(1) > tbody > tr > td").text();
+				var amount = $(".bodymargin > div > div:eq(2) table table td.boldText:first").text();
 			}
 			invnum = invnum.substr(invnum.indexOf("Order")+6,6);
-			$(".bodymargin").html('<div id="tosinfo">Your Order Number is <span>'+invnum+'</span>. <a href="https://www.redcheetah.com/'+company+'/admin/reports_invoice.php">Print Invoice</a></div>');
+			$(".bodymargin").html('<div id="tosinfo">Your Order Number is <span>'+invnum+'</span> for <span>'+amount+'</span>. <a href="https://www.redcheetah.com/'+company+'/admin/reports_invoice.php">Print Invoice</a></div>');
 			$("body").on("click","#tosinfo a",function() {
 				GM_setValue("printinv",invnum);
 				GM_setValue("autoprint",true);

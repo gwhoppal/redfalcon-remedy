@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name				Red Falcon Remedy
-// @version				2.5.2
+// @version				2.5.3
 // @namespace			http://toswy.com/
 // @description			Modifies Red Falcon for the better of TOS. Designed for Firefox
 // @include				https://*.redcheetah.com/*/admin/*

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name				Red Falcon Remedy
-// @version				2.5.3
+// @version				2.5.4
 // @namespace			http://toswy.com/
 // @description			Modifies Red Falcon for the better of TOS. Designed for Firefox
 // @include				https://*.redcheetah.com/*/admin/*
@@ -58,7 +58,7 @@ jQuery(document).ready(function($) {
 	if (loc == "https://www.redcheetah.com/torrington/admin/" || loc == "https://www.redcheetah.com/bhbs/admin/" || loc.indexOf("index.php") != -1) {
 		$("title").text("Red Falcon Login");
 		$("#username").focus();
-		if ($("form[name='clearForm']").length) $("#clearformpassword").focus(); // change focus if currently logged in
+		if ($("form[name='clearForm']").length) { $("#clearformpassword").focus() }; // change focus if currently logged in
 		$("form").submit(function() { GM_setValue("username",$(this).find("[name='username']").val()); }); // grab username when we submit form
 	} else { // this is code we want to execute on all pages but the login
 		$("title").text("Red Falcon " + companycap);
@@ -147,7 +147,7 @@ jQuery(document).ready(function($) {
 	// ORDERS - point of sale; entry & checkout
 	// *****************************************************
 	if (loc.indexOf("order_pos.php") != -1) {
-        if ($("[name='pos_payment_credit_auth']").parent().length) $("#usbhid").next("table").addClass("toscheckout");
+        if ($("[name='pos_payment_credit_auth']").parent().length) { $("#usbhid").next("table").addClass("toscheckout"); }
 		// remove some fields from checkout and change some values to defaults we use
 		$("[name='pos_payment_credit_type'], [name='pos_payment_credit_new_pan'], [name='pos_payment_credit_new_csc']").parent().hide();
 		$("[name='pos_payment_credit_month'], [name='pos_payment_credit_billing_address']").parent().parent().parent().parent().hide();
@@ -163,12 +163,12 @@ jQuery(document).ready(function($) {
 		if ($(".printEnvelopeInvoice").length) {
 			if ($(".bodymargin > div > div:first > table:eq(1) > tbody > tr:first > td:first > b").length) { // existing customer; we have to find order number differently
 				$(".bodymargin > div > div:first table").remove();
-				var invnum = $(".bodymargin > div > div:first").text();
-				var amount = $(".bodymargin > div > div:eq(2) table table td.boldText:first").text();
+				invnum = $(".bodymargin > div > div:first").text();
+				amount = $(".bodymargin > div > div:eq(2) table table td.boldText:first").text();
 			} else { // point of sale customer
 				// find the order number on the page
-				var invnum = $(".bodymargin > div > div:first > table:eq(1) > tbody > tr > td").text();
-				var amount = $(".bodymargin > div > div:eq(2) table table td.boldText:first").text();
+				invnum = $(".bodymargin > div > div:first > table:eq(1) > tbody > tr > td").text();
+				amount = $(".bodymargin > div > div:eq(2) table table td.boldText:first").text();
 			}
 			invnum = invnum.substr(invnum.indexOf("Order")+6,6);
 			$(".bodymargin").html('<div id="tosinfo">Your Order Number is <span>'+invnum+'</span> for <span>'+amount+'</span>. <a href="https://www.redcheetah.com/'+company+'/admin/reports_invoice.php">Print Invoice</a></div>');
@@ -300,7 +300,7 @@ jQuery(document).ready(function($) {
 			$("input[value='Export to PDF']").remove(); // remove Export to PDF button
 			$(".bodymargin > div > div:eq(2) > table").attr("cellspacing","0").css({"cssText":"border-collapse:collapse !important"});
 			rows = $(".bodymargin > div > div:eq(2) > table > tbody > tr").not(":lt(1)").not(":gt(-3)");
-			rows.each(function(i){ if (i%2 === 1) $(this).css({"background-color":"#e1e1e1"}); }); // add alternating row colors
+			rows.each(function(i){ if (i%2 === 1) { $(this).css({"background-color":"#e1e1e1"}); } }); // add alternating row colors
 			rows.css({"border":"1px solid #a1a1a1"}).find("td").css({"padding":"3px"}); // add border class to proper table rows
 		}
 		

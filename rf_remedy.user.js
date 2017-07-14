@@ -1,20 +1,19 @@
 // ==UserScript==
 // @name				Red Falcon Remedy
-// @version				2.5.5
+// @version				2.5.6
 // @namespace			http://toswy.com/
 // @description			Modifies Red Falcon for the better of TOS. Designed for Firefox
 // @include				https://*.redcheetah.com/*/admin/*
 // @grant				GM_getValue
 // @grant				GM_setValue
 // @grant				GM_deleteValue
-// @require       		https://code.jquery.com/jquery-2.1.1.min.js
 // @downloadURL			https://github.com/gwhoppal/redfalcon-remedy/raw/master/rf_remedy.user.js
 // @updateURL			https://github.com/gwhoppal/redfalcon-remedy/raw/master/rf_remedy.user.js
 // ==/UserScript==
 
 document.getElementsByClassName('navbar-logo')[0].style.visibility = 'hidden';
 
-jQuery.noConflict();
+if(typeof $ == 'undefined'){ var $ = unsafeWindow.jQuery; }
 var loc = window.location.href;
 var company = "torrington";
 if (loc.indexOf("bhbs") != -1) {

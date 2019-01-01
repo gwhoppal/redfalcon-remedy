@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name				Red Falcon Remedy
-// @version				2.5.8
+// @version				2.5.9
 // @namespace			http://toswy.com/
-// @description			Modifies Red Falcon for the better of TOS. Designed for Firefox
+// @description			Modifies Red Falcon for the better of TOS.
 // @include				https://*.redcheetah.com/*/admin/*
 // @grant				GM_getValue
 // @grant				GM_setValue
@@ -24,9 +24,6 @@ null==d?void 0:d))},attrHooks:{type:{set:function(a,b){if(!o.radioValue&&"radio"
 jQuery.noConflict();
 var loc = window.location.href;
 var company = "torrington";
-if (loc.indexOf("bhbs") != -1) {
-	company = "bhbs";
-}
 
 companycap = company[0].toUpperCase() + company.slice(1);
 var pagename = loc.substring(loc.lastIndexOf("/")+1,loc.lastIndexOf(".php")); // gets the current page we are on for styling
@@ -34,7 +31,7 @@ var pagename = loc.substring(loc.lastIndexOf("/")+1,loc.lastIndexOf(".php")); //
 jQuery(".navbar-logo").hide();
 jQuery("<link/>", {
 	rel: "stylesheet",
-	href: "https://toswy.com/rf_remedy.style.css",
+	href: "https://github.com/gwhoppal/redfalcon-remedy/raw/master/rf_remedy.style.css",
 	type: "text/css"
 }).appendTo("head");
 
@@ -44,7 +41,7 @@ ss.type = "text/javascript";
 ss.innerHTML = "function TOScheckAll(tocheck) { checkboxes = document.querySelectorAll('input[type=checkbox]'); for (i = 0, c = checkboxes.length; i < c; ++i) checkboxes[i].checked = tocheck; }";
 document.getElementsByTagName("head")[0].appendChild(ss);
 
-if (loc == "https://www.redcheetah.com/torrington/admin/" || loc == "https://www.redcheetah.com/bhbs/admin/" || loc.indexOf("index.php") != -1) {
+if (loc == "https://www.redcheetah.com/torrington/admin/" || loc.indexOf("index.php") != -1) {
 	jQuery("body").addClass(company + " login");
 } else { // this is code we want to execute on all pages but the login
 	jQuery("body").addClass(company + " " + pagename + " notlogin");
@@ -55,14 +52,14 @@ jQuery(document).ready(function($) {
 	// *****************************************************
 	// LOGIN - login; else any other page
 	// *****************************************************
-	if (loc == "https://www.redcheetah.com/torrington/admin/" || loc == "https://www.redcheetah.com/bhbs/admin/" || loc.indexOf("index.php") != -1) {
+	if (loc == "https://www.redcheetah.com/torrington/admin/" || loc.indexOf("index.php") != -1) {
 		$("title").text("Red Falcon Login");
 		$("#username").focus();
 		if ($("form[name='clearForm']").length) { $("#clearformpassword").focus() }; // change focus if currently logged in
 		$("form").submit(function() { GM_setValue("username",$(this).find("[name='username']").val()); }); // grab username when we submit form
 	} else { // this is code we want to execute on all pages but the login
 		$("title").text("Red Falcon " + companycap);
-		if (company == "torrington") { $("img[src*='img_lvl2.gif']").attr("src","http://toswy.com/toslogo.png"); } // change print logo
+		if (company == "torrington") { $("img[src*='img_lvl2.gif']").attr("src","https://toswy.com/toslogo.png"); } // change print logo
 		$("a[href='pending_orders_export.php']").parent().parent().parent().remove(); // remove "Export to Wholesaler" shortcut in side menu
 		$("header .nav_alerts").prepend('<li><a href="https://www.redcheetah.com/'+company+'/admin/" title="Home"><i class="fa fa-2x fa-home"></i> '+companycap+'</a></li><li class="divider-vertical hidden-phone hidden-tablet"></li>'); // add home link to nav bar
 		$("header ul.user_menu.pull-right li a[href='logout.php'] span").text("Logout "+GM_getValue("username"));
@@ -137,6 +134,7 @@ jQuery(document).ready(function($) {
 				return (a = $(a).text(), b = $(b).text(), a == 'NA' ? 1 : b == 'NA' ? -1 : 0|a > b);
 			}));
 			$("select[name='sku']").val('').focus();
+			$("input[name='desc']").attr("minlength","15");
 		}
 	}
 	
@@ -158,24 +156,47 @@ jQuery(document).ready(function($) {
 		/*$("label[for='pos_payment_gift']").text("Gift Card"); // change "Gift Certificate" to "Gift Card"
 		$("[name='pos_payment_gift_number']").val("1111").parent().hide(); // add gift card default number*/
 		$("label[for='pos_payment_gift']").parent().parent().hide(); // remove breaks RF code so we just hide it instead
-		
+        $("#pos_customer_name").val("Point of Sale Order").attr("readonly",true);
+        
+		/* this is when we print directly out of point of sale
+        // change "Order" to "Invoice"
+		if ($(".printEnvelopeInvoice").length) {
+			if ($(".bodymargin > div > div:first > table:eq(1) > tbody > tr:first > td:first > b").length) { // existing customer; we have to find order number differently
+				var orderPntr = $(".bodymargin > div > div:first");
+                var text = orderPntr.html().replace('Order', 'Invoice');
+                orderPntr.html(text);
+			} else { // point of sale customer
+				var orderPntr = $(".bodymargin > div > div:first > table:eq(1) > tbody > tr > td");
+                var text = orderPntr.html().replace('Order', 'Invoice');
+                orderPntr.html(text);
+                orderPntr.parent().find("td:first").remove();
+			}
+		}*/
 		// get the invoice number and autoprint
 		if ($(".printEnvelopeInvoice").length) {
 			if ($(".bodymargin > div > div:first > table:eq(1) > tbody > tr:first > td:first > b").length) { // existing customer; we have to find order number differently
 				$(".bodymargin > div > div:first table").remove();
-				invnum = $(".bodymargin > div > div:first").text();
-				amount = $(".bodymargin > div > div:eq(2) table table td.boldText:first").text();
+				var invnum = $(".bodymargin > div > div:first").text();
+
+                invnum = invnum.substr(invnum.indexOf("Order")+6,6);
+                $(".bodymargin").html('<div id="tosinfo">Your Order Number is <span>'+invnum+'</span>. <a href="https://www.redcheetah.com/'+company+'/admin/reports_invoice.php">Print Invoice</a></div>');
+                $("body").on("click","#tosinfo a",function() {
+                    GM_setValue("printinv",invnum);
+                    GM_setValue("autoprint",true);
+                });
 			} else { // point of sale customer
 				// find the order number on the page
-				invnum = $(".bodymargin > div > div:first > table:eq(1) > tbody > tr > td").text();
-				amount = $(".bodymargin > div > div:eq(2) table table td.boldText:first").text();
+				var invnum = $(".bodymargin > div > div:first > table:eq(1) > tbody > tr > td").text();
+                var lasttr = $("div.bodymargin > div > div:last table table tr:last");
+                lasttr.find("td:first").attr("colspan","5");
+                lasttr.prev().find("td:first").attr("colspan","5");
 			}
-			invnum = invnum.substr(invnum.indexOf("Order")+6,6);
-			$(".bodymargin").html('<div id="tosinfo">Your Order Number is <span>'+invnum+'</span> for <span>'+amount+'</span>. <a href="https://www.redcheetah.com/'+company+'/admin/reports_invoice.php">Print Invoice</a></div>');
+			/*invnum = invnum.substr(invnum.indexOf("Order")+6,6);
+			$(".bodymargin").html('<div id="tosinfo">Your Order Number is <span>'+invnum+'</span>. <a href="https://www.redcheetah.com/'+company+'/admin/reports_invoice.php">Print Invoice</a></div>');
 			$("body").on("click","#tosinfo a",function() {
 				GM_setValue("printinv",invnum);
 				GM_setValue("autoprint",true);
-			});
+			});*/
 		}
 	}
 
@@ -305,8 +326,10 @@ jQuery(document).ready(function($) {
 		}
 		
 		if ($(".printEnvelopeInvoice").length) { // invoices ready to print
+			$("body").removeClass("notlogin");
+			$("table").css({"background-color":"#000000 !important"});
 			$(".printEnvelopeInvoice").parent().addClass("printfullwidth").next().find("div:eq(0) > table > tbody > tr > td").css({"background-color":"#000"}).attr("bgcolor",""); // add border to print invoices
-			if (company == 'torrington') { $(".printEnvelopeInvoice img[src*='toslogo.png']").attr("src","http://toswy.com/toslogo.jpg").attr("width","67%"); }
+			if (company == 'torrington') { $(".printEnvelopeInvoice img[src*='toslogo.png']").attr("src","https://toswy.com/toslogo.jpg").attr("width","67%"); }
 			
 			// remove TOS address from credit memos
 			$(".printEnvelopeInvoice").each(function(i){
@@ -321,15 +344,22 @@ jQuery(document).ready(function($) {
 					if (tdcell.length < 1 || tdcell == "Terms:") { $(this).remove(); }
 				});
 				
+				//var sigline = '<tr valign="middle"><td bgcolor="#ffffff" align="left" valign="middle" colspan="8"><strong>Signature:</strong><br /><br /></td></tr>';
+				//$(this).parent().next().find("table table tr:last").after(sigline);
+				$(this).parent().next().find("table").css({"width":"100%"});
+				$(this).parent().next().find("table:first").css({"padding-left":"1px"});
+				$(this).parent().next().find("table table").css({"padding-bottom":"1px"});
+				
 				// convert table to single table for better printing
 				items = $(this).parent().next().find("table table");
 				mytable = '<table class="tosprintitems" cellpadding="0" cellspacing="0">' + $(this).parent().next().find("div:eq(0) > table table").html() + '</table>';
 				$(this).parent().next().find("div:eq(0)").html(mytable);
 			});
 			
-			var sigline = '<tr valign="middle"><td align="left" valign="middle" colspan="8"><strong>Signature:</strong><br /><br /></td></tr>';
+			var sigline = '<tr valign="middle"><td align="left" valign="middle" colspan="8"><strong>Print Your Name:</strong><br /><br /></td></tr>';
 			$(".tosprintitems").each(function(i){ $(this).find("tr:last").after(sigline); $(this).parent().addClass("printfullwidth"); });
 			$(".tosprintitems td").wrapInner('<div class="pagebreak"></div>');
+			$("#idgeneral_notesDiv").css({"max-width":"100%"}); // fixes problem only when printing
 			setTimeout(function(){ window.print(); }, 1000);
 
 			// allow highlighting rows on invoices
